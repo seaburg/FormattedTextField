@@ -40,7 +40,7 @@ open class FormattedTextField: UITextField {
         addSubview(placeholderLabel)
     }
 
-    open var textMask: String? {
+    @IBInspectable open var textMask: String? {
         didSet(oldMask) {
             var cursorPosition = 0
             let unformattedText = unformatterText(fromText: (formattedText ?? ""), textMask: oldMask, cursorPosition: &cursorPosition)
