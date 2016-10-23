@@ -149,7 +149,12 @@ open class FormattedTextField: UITextField {
     }
     private let placeholderLabel: UILabel
 
-    private lazy var delegateProxy: TextFieldDelegateProxy = TextFieldDelegateProxy(shouldChangeFunc: self.shouldChangeCharacters(in:replacementString:))
+    private lazy var delegateProxy: TextFieldDelegateProxy = {
+        let shouldChangeFunc: (NSRange, String) -> Bool = { [unowned self] (range, string) in
+            return self.shouldChangeCharacters(in: range, replacementString: string)
+        }
+        return TextFieldDelegateProxy(shouldChangeFunc: shouldChangeFunc)
+    }()
 
     private func shouldChangeCharacters(in range: NSRange, replacementString string: String) -> Bool {
         let formattedText = self.formattedText ?? ""
