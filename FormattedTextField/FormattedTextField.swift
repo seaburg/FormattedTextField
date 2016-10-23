@@ -82,8 +82,7 @@ open class FormattedTextField: UITextField {
 
     open override var attributedText: NSAttributedString? {
         get {
-            assert(false, "masked text field unsupports attributed text")
-            return nil
+            return super.attributedText
         }
         set(value) {
             assert(false, "masked text field unsupports attributed text")
