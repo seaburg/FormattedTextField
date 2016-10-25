@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8FD40B471DBEB3840015DB1D /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD40B461DBEB3840015DB1D /* UITextFieldExtension.swift */; };
 		8FFF615C1DBC074E0033E1FC /* FormattedTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FFF615A1DBC074E0033E1FC /* FormattedTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8FFF61641DBC07C70033E1FC /* FormattedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFF61621DBC07C70033E1FC /* FormattedTextField.swift */; };
 		8FFF61651DBC07C70033E1FC /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFF61631DBC07C70033E1FC /* StringExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8FD40B461DBEB3840015DB1D /* UITextFieldExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
 		8FFF61571DBC074D0033E1FC /* FormattedTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FormattedTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FFF615A1DBC074E0033E1FC /* FormattedTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FormattedTextField.h; sourceTree = "<group>"; };
 		8FFF615B1DBC074E0033E1FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -52,6 +54,7 @@
 			children = (
 				8FFF61621DBC07C70033E1FC /* FormattedTextField.swift */,
 				8FFF61631DBC07C70033E1FC /* StringExtensions.swift */,
+				8FD40B461DBEB3840015DB1D /* UITextFieldExtension.swift */,
 				8FFF615A1DBC074E0033E1FC /* FormattedTextField.h */,
 				8FFF615B1DBC074E0033E1FC /* Info.plist */,
 			);
@@ -139,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FFF61651DBC07C70033E1FC /* StringExtensions.swift in Sources */,
+				8FD40B471DBEB3840015DB1D /* UITextFieldExtension.swift in Sources */,
 				8FFF61641DBC07C70033E1FC /* FormattedTextField.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
