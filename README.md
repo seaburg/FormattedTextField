@@ -21,5 +21,5 @@ Usage
         let textField = FormattedTextField()
         textField.textMask = "8 (×××) ××× ××××"
         textField.placeholder = "___) ___ ____"
-        textField.text = "1111111111"
+        textField.unformattedText = "1111111111"
     ...
