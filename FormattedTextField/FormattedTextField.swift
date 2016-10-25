@@ -8,6 +8,10 @@
 
 import UIKit
 
+@objc public protocol FormattedTextFieldDelegate: UITextFieldDelegate {
+    @objc optional func textField(_ textField: UITextField, shouldChangeUnformattedText text: String, in range: NSRange, replacementString: String) -> Bool
+}
+
 open class FormattedTextField: UITextField {
     open static let maskSymbol: Character = "×"
 
@@ -28,7 +32,11 @@ open class FormattedTextField: UITextField {
     private func commonInit() {
         delegateProxy.delegate = super.delegate
         super.delegate = delegateProxy
-        text = super.text
+
+        if let unformattedText = unformattedText {
+            var cursorPosition = 0
+            text = formattedText(fromText: unformattedText, textMask: text, cursorPosition: &cursorPosition)
+        }
 
         placeholderLabel.font = font
         placeholderLabel.textColor = UIColor(white: 170/255.0, alpha: 0.5)
@@ -42,28 +50,21 @@ open class FormattedTextField: UITextField {
 
     @IBInspectable open var textMask: String? {
         didSet(oldMask) {
-            var cursorPosition = 0
-            let unformattedText = unformatterText(fromText: (formattedText ?? ""), textMask: oldMask, cursorPosition: &cursorPosition)
-            formattedText = formattedText(fromText: unformattedText, textMask: textMask, cursorPosition: &cursorPosition)
+            var cursorPosition: Int = 0
+
+            let unformattedText = unformatterText(fromText: (text ?? ""), textMask: oldMask, cursorPosition: &cursorPosition)
+            let newFormattedText = formattedText(fromText: unformattedText, textMask: textMask, cursorPosition: &cursorPosition)
+            text = newFormattedText
         }
     }
 
-    open private(set) var formattedText: String? {
+    @IBInspectable open var unformattedText: String? {
         get {
-            return super.text
-        }
-        set(value) {
-            super.text = value
-        }
-    }
-
-    open override var text: String? {
-        get {
-            guard let formattedText = self.formattedText else {
+            guard let text = text else {
                 return nil
             }
             var cursorPosition = 0
-            let unformattedText = self.unformatterText(fromText: formattedText, textMask: textMask, cursorPosition: &cursorPosition)
+            let unformattedText = self.unformatterText(fromText: text, textMask: textMask, cursorPosition: &cursorPosition)
 
             return unformattedText
         }
@@ -72,9 +73,9 @@ open class FormattedTextField: UITextField {
             let unformattedText = value ?? ""
             let formattedText = self.formattedText(fromText: unformattedText, textMask: textMask, cursorPosition: &cursorPosition)
             if formattedText.characters.count > 0 || value != nil {
-                self.formattedText = formattedText
+                text = formattedText
             } else {
-                self.formattedText = nil
+                text = nil
             }
             placeholderLabel.isHidden = (unformattedText.characters.count > 0)
         }
@@ -144,6 +145,7 @@ open class FormattedTextField: UITextField {
     }
 
     // MARK: - Private
+
     private var maskSymbol: Character {
         return type(of: self).maskSymbol
     }
@@ -157,7 +159,13 @@ open class FormattedTextField: UITextField {
     }()
 
     private func shouldChangeCharacters(in range: NSRange, replacementString string: String) -> Bool {
-        let formattedText = self.formattedText ?? ""
+        if let shouldChange = delegateProxy.delegate?.textField?(self, shouldChangeCharactersIn: range, replacementString: string) {
+            if !shouldChange {
+                return false
+            }
+        }
+
+        let formattedText = text ?? ""
         var charachtersRange = formattedText.nsrange(fromRange: formattedText.range(fromUtf16NsRange: range)!)
 
         var cursorPosition: Int
@@ -171,11 +179,11 @@ open class FormattedTextField: UITextField {
         var unformattedText = unformatterText(fromText: formattedText, textMask: textMask, cursorPosition: &cursorPosition)
         let unformattedRange = self.range(fromFormattedRange: charachtersRange)
 
-        if let originDelegate = delegateProxy.delegate,
-            originDelegate.responds(to: #selector(UITextFieldDelegate.textField(_:shouldChangeCharactersIn:replacementString:))) {
+        if let originDelegate = (delegateProxy.delegate as? FormattedTextFieldDelegate),
+            originDelegate.responds(to: #selector(FormattedTextFieldDelegate.textField(_:shouldChangeUnformattedText:in:replacementString:))) {
 
             let utf16UnformattedRange = unformattedText.utf16Nsrange(fromRange: unformattedText.range(fromNsRange: unformattedRange)!)
-            if !originDelegate.textField!(self, shouldChangeCharactersIn: utf16UnformattedRange, replacementString: string) {
+            if !originDelegate.textField!(self, shouldChangeUnformattedText:unformattedText, in:utf16UnformattedRange, replacementString: string) {
                 return false
             }
         }
@@ -184,15 +192,12 @@ open class FormattedTextField: UITextField {
         cursorPosition += string.characters.count
 
         let newFormattedText = self.formattedText(fromText: unformattedText, textMask: textMask, cursorPosition: &cursorPosition)
-        self.formattedText = newFormattedText
+        text = newFormattedText
         placeholderLabel.isHidden = (unformattedText.characters.count > 0)
 
         cursorPosition = min(cursorPosition, newFormattedText.characters.count)
         let cursorIndex = newFormattedText.index(newFormattedText.startIndex, offsetBy: cursorPosition)
-        let utf16CursorPosition = newFormattedText.utf16Nsrange(fromRange: cursorIndex..<cursorIndex).location
-
-        let targetPosition = position(from: beginningOfDocument, offset: utf16CursorPosition)!
-        selectedTextRange = self.textRange(from: targetPosition, to: targetPosition)
+        selectedCharachtersRange = cursorIndex..<cursorIndex
 
         sendActions(for: .editingChanged)
 
