@@ -51,10 +51,20 @@ open class FormattedTextField: UITextField {
     @IBInspectable open var textMask: String? {
         didSet(oldMask) {
             var cursorPosition: Int = 0
+            if let selectedRange = selectedCharachtersRange, let text = text {
+                cursorPosition = text.distance(from: text.startIndex, to: selectedRange.lowerBound)
+            } else {
+                cursorPosition = 0
+            }
 
             let unformattedText = unformatterText(fromText: (text ?? ""), textMask: oldMask, cursorPosition: &cursorPosition)
             let newFormattedText = formattedText(fromText: unformattedText, textMask: textMask, cursorPosition: &cursorPosition)
             text = newFormattedText
+
+            if selectedTextRange != nil {
+                let cursorIndex = newFormattedText.index(newFormattedText.startIndex, offsetBy: cursorPosition, limitedBy: newFormattedText.endIndex) ?? newFormattedText.endIndex
+                selectedCharachtersRange = cursorIndex..<cursorIndex
+            }
         }
     }
 
