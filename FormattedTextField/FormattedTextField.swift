@@ -51,7 +51,7 @@ open class FormattedTextField: UITextField {
     @IBInspectable open var textMask: String? {
         didSet(oldMask) {
             var cursorPosition: Int = 0
-            if let selectedRange = selectedCharachtersRange, let text = text {
+            if let selectedRange = selectedCharactersRange, let text = text {
                 cursorPosition = text.distance(from: text.startIndex, to: selectedRange.lowerBound)
             } else {
                 cursorPosition = 0
@@ -63,7 +63,7 @@ open class FormattedTextField: UITextField {
 
             if selectedTextRange != nil {
                 let cursorIndex = newFormattedText.index(newFormattedText.startIndex, offsetBy: cursorPosition, limitedBy: newFormattedText.endIndex) ?? newFormattedText.endIndex
-                selectedCharachtersRange = cursorIndex..<cursorIndex
+                selectedCharactersRange = cursorIndex..<cursorIndex
             }
         }
     }
@@ -210,7 +210,7 @@ open class FormattedTextField: UITextField {
 
         cursorPosition = min(cursorPosition, newFormattedText.characters.count)
         let cursorIndex = newFormattedText.index(newFormattedText.startIndex, offsetBy: cursorPosition)
-        selectedCharachtersRange = cursorIndex..<cursorIndex
+        selectedCharactersRange = cursorIndex..<cursorIndex
 
         sendActions(for: .editingChanged)
 
@@ -269,15 +269,15 @@ open class FormattedTextField: UITextField {
             return range
         }
 
-        let maskCharachtersRange = mask.range(fromNsRange: range)!
+        let maskCharactersRange = mask.range(fromNsRange: range)!
         var location = 0
-        for character in mask[mask.startIndex..<maskCharachtersRange.lowerBound].characters {
+        for character in mask[mask.startIndex..<maskCharactersRange.lowerBound].characters {
             if character == maskSymbol {
                 location += 1
             }
         }
         var length = 0
-        for character in mask[maskCharachtersRange].characters {
+        for character in mask[maskCharactersRange].characters {
             if character == maskSymbol {
                 length += 1
             }
@@ -289,18 +289,18 @@ open class FormattedTextField: UITextField {
         guard let mask = self.textMask else {
             return range
         }
-        let charachtersRange = mask.range(fromNsRange: range)!
-        if mask[charachtersRange].contains(String(maskSymbol)) {
+        let charactersRange = mask.range(fromNsRange: range)!
+        if mask[charactersRange].contains(String(maskSymbol)) {
             return range
         }
 
-        let searchRange = mask.startIndex..<charachtersRange.lowerBound
+        let searchRange = mask.startIndex..<charactersRange.lowerBound
 
         let deleteRange: Range<String.Index>
         if let removedSymbolRange = mask.range(of: String(maskSymbol), options: .backwards, range: searchRange, locale: nil) {
-            deleteRange = removedSymbolRange.lowerBound..<charachtersRange.upperBound
+            deleteRange = removedSymbolRange.lowerBound..<charactersRange.upperBound
         } else {
-            deleteRange = charachtersRange.upperBound..<charachtersRange.upperBound
+            deleteRange = charactersRange.upperBound..<charactersRange.upperBound
         }
 
         return mask.nsrange(fromRange: deleteRange)

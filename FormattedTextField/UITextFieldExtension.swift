@@ -9,7 +9,7 @@
 import UIKit
 
 extension UITextField {
-    var selectedCharachtersRange: Range<String.Index>? {
+    var selectedCharactersRange: Range<String.Index>? {
         get {
             guard let selectedTextRange = selectedTextRange else {
                 return nil

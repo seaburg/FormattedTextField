@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		8F0F533B1DC1524A00791173 /* FormattedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0F53371DC1524A00791173 /* FormattedTextField.swift */; };
-		8F0F533D1DC1524A00791173 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0F53391DC1524A00791173 /* StringExtensions.swift */; };
 		8F0F533E1DC1524A00791173 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0F533A1DC1524A00791173 /* UITextFieldExtension.swift */; };
+		8F93C22B1DC15913007A4101 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F93C22A1DC15913007A4101 /* StringExtension.swift */; };
 		8FD40B571DC1366F0015DB1D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD40B561DC1366F0015DB1D /* AppDelegate.swift */; };
 		8FD40B591DC1366F0015DB1D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD40B581DC1366F0015DB1D /* ViewController.swift */; };
 		8FD40B5C1DC1366F0015DB1D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8FD40B5A1DC1366F0015DB1D /* Main.storyboard */; };
@@ -19,8 +19,8 @@
 
 /* Begin PBXFileReference section */
 		8F0F53371DC1524A00791173 /* FormattedTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormattedTextField.swift; sourceTree = "<group>"; };
-		8F0F53391DC1524A00791173 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		8F0F533A1DC1524A00791173 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
+		8F93C22A1DC15913007A4101 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		8FD40B531DC1366F0015DB1D /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FD40B561DC1366F0015DB1D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8FD40B581DC1366F0015DB1D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -44,8 +44,8 @@
 		8F0F53351DC1524A00791173 /* FormattedTextField */ = {
 			isa = PBXGroup;
 			children = (
+				8F93C22A1DC15913007A4101 /* StringExtension.swift */,
 				8F0F53371DC1524A00791173 /* FormattedTextField.swift */,
-				8F0F53391DC1524A00791173 /* StringExtensions.swift */,
 				8F0F533A1DC1524A00791173 /* UITextFieldExtension.swift */,
 			);
 			name = FormattedTextField;
@@ -155,8 +155,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8F0F533E1DC1524A00791173 /* UITextFieldExtension.swift in Sources */,
-				8F0F533D1DC1524A00791173 /* StringExtensions.swift in Sources */,
 				8F0F533B1DC1524A00791173 /* FormattedTextField.swift in Sources */,
+				8F93C22B1DC15913007A4101 /* StringExtension.swift in Sources */,
 				8FD40B591DC1366F0015DB1D /* ViewController.swift in Sources */,
 				8FD40B571DC1366F0015DB1D /* AppDelegate.swift in Sources */,
 			);
