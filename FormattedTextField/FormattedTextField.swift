@@ -200,6 +200,9 @@ open class FormattedTextField: UITextField {
 
         unformattedText.replaceSubrange(unformattedText.range(fromNsRange: unformattedRange)!, with: string)
         cursorPosition += string.characters.count
+        if string.characters.count > 0 {
+            cursorPosition -= unformattedRange.length
+        }
 
         let newFormattedText = self.formattedText(fromText: unformattedText, textMask: textMask, cursorPosition: &cursorPosition)
         text = newFormattedText
