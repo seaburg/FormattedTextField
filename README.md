@@ -23,3 +23,6 @@ Usage
         textField.placeholder = "___) ___ ____"
         textField.unformattedText = "1111111111"
     ...
+Example
+-----
+![Example.gif](https://raw.githubusercontent.com/seaburg/FormattedTextField/master/Example/Example.gif)
