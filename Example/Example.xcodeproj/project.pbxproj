@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8F0F533B1DC1524A00791173 /* FormattedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0F53371DC1524A00791173 /* FormattedTextField.swift */; };
 		8F0F533E1DC1524A00791173 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F0F533A1DC1524A00791173 /* UITextFieldExtension.swift */; };
+		8F2C0C791DD7C3F700F06656 /* MaskTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2C0C771DD7C3F700F06656 /* MaskTextFormatter.swift */; };
 		8F2C0C7A1DD7C3F700F06656 /* TextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2C0C781DD7C3F700F06656 /* TextFormatter.swift */; };
 		8F93C22B1DC15913007A4101 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F93C22A1DC15913007A4101 /* StringExtension.swift */; };
 		8FD40B571DC1366F0015DB1D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD40B561DC1366F0015DB1D /* AppDelegate.swift */; };
@@ -21,6 +22,7 @@
 /* Begin PBXFileReference section */
 		8F0F53371DC1524A00791173 /* FormattedTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormattedTextField.swift; sourceTree = "<group>"; };
 		8F0F533A1DC1524A00791173 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
+		8F2C0C771DD7C3F700F06656 /* MaskTextFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MaskTextFormatter.swift; sourceTree = "<group>"; };
 		8F2C0C781DD7C3F700F06656 /* TextFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFormatter.swift; sourceTree = "<group>"; };
 		8F93C22A1DC15913007A4101 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		8FD40B531DC1366F0015DB1D /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -46,6 +48,7 @@
 		8F0F53351DC1524A00791173 /* FormattedTextField */ = {
 			isa = PBXGroup;
 			children = (
+				8F2C0C771DD7C3F700F06656 /* MaskTextFormatter.swift */,
 				8F2C0C781DD7C3F700F06656 /* TextFormatter.swift */,
 				8F93C22A1DC15913007A4101 /* StringExtension.swift */,
 				8F0F53371DC1524A00791173 /* FormattedTextField.swift */,
@@ -160,6 +163,7 @@
 				8F0F533E1DC1524A00791173 /* UITextFieldExtension.swift in Sources */,
 				8F0F533B1DC1524A00791173 /* FormattedTextField.swift in Sources */,
 				8F93C22B1DC15913007A4101 /* StringExtension.swift in Sources */,
+				8F2C0C791DD7C3F700F06656 /* MaskTextFormatter.swift in Sources */,
 				8FD40B591DC1366F0015DB1D /* ViewController.swift in Sources */,
 				8F2C0C7A1DD7C3F700F06656 /* TextFormatter.swift in Sources */,
 				8FD40B571DC1366F0015DB1D /* AppDelegate.swift in Sources */,

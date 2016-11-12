@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8F9320221DD775890097A8AF /* FormattedTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FFF61571DBC074D0033E1FC /* FormattedTextField.framework */; };
 		8F9320291DD7759D0097A8AF /* TextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9320281DD7759D0097A8AF /* TextFormatter.swift */; };
+		8F93202B1DD776C30097A8AF /* MaskTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F93202A1DD776C30097A8AF /* MaskTextFormatter.swift */; };
+		8FBA8C5E1DD77C2A00B12B0A /* MaskTextFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F93201F1DD775890097A8AF /* MaskTextFormatterTests.swift */; };
 		8FD40B471DBEB3840015DB1D /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD40B461DBEB3840015DB1D /* UITextFieldExtension.swift */; };
 		8FFF615C1DBC074E0033E1FC /* FormattedTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FFF615A1DBC074E0033E1FC /* FormattedTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8FFF61641DBC07C70033E1FC /* FormattedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFF61621DBC07C70033E1FC /* FormattedTextField.swift */; };
@@ -40,6 +42,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		8F93201A1DD775890097A8AF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F9320221DD775890097A8AF /* FormattedTextField.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8FFF61531DBC074D0033E1FC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -50,10 +60,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8F93201E1DD775890097A8AF /* FormattedTextFieldTests */ = {
+			isa = PBXGroup;
+			children = (
+				8F93201F1DD775890097A8AF /* MaskTextFormatterTests.swift */,
+				8F9320211DD775890097A8AF /* Info.plist */,
+			);
+			path = FormattedTextFieldTests;
+			sourceTree = "<group>";
+		};
 		8FFF614D1DBC074D0033E1FC = {
 			isa = PBXGroup;
 			children = (
 				8FFF61591DBC074D0033E1FC /* FormattedTextField */,
+				8F93201E1DD775890097A8AF /* FormattedTextFieldTests */,
 				8FFF61581DBC074D0033E1FC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -62,6 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				8FFF61571DBC074D0033E1FC /* FormattedTextField.framework */,
+				8F93201D1DD775890097A8AF /* FormattedTextFieldTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -75,6 +96,7 @@
 				8FFF615A1DBC074E0033E1FC /* FormattedTextField.h */,
 				8FFF615B1DBC074E0033E1FC /* Info.plist */,
 				8F9320281DD7759D0097A8AF /* TextFormatter.swift */,
+				8F93202A1DD776C30097A8AF /* MaskTextFormatter.swift */,
 			);
 			path = FormattedTextField;
 			sourceTree = "<group>";
@@ -93,6 +115,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		8F93201C1DD775890097A8AF /* FormattedTextFieldTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8F9320271DD775890097A8AF /* Build configuration list for PBXNativeTarget "FormattedTextFieldTests" */;
+			buildPhases = (
+				8F9320191DD775890097A8AF /* Sources */,
+				8F93201A1DD775890097A8AF /* Frameworks */,
+				8F93201B1DD775890097A8AF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8F9320241DD775890097A8AF /* PBXTargetDependency */,
+			);
+			name = FormattedTextFieldTests;
+			productName = FormattedTextFieldTests;
+			productReference = 8F93201D1DD775890097A8AF /* FormattedTextFieldTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		8FFF61561DBC074D0033E1FC /* FormattedTextField */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8FFF615F1DBC074E0033E1FC /* Build configuration list for PBXNativeTarget "FormattedTextField" */;
@@ -117,9 +157,14 @@
 		8FFF614E1DBC074D0033E1FC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0800;
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Evgeniy Yurtaev";
 				TargetAttributes = {
+					8F93201C1DD775890097A8AF = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
+					};
 					8FFF61561DBC074D0033E1FC = {
 						CreatedOnToolsVersion = 8.0;
 						LastSwiftMigration = 0800;
@@ -140,11 +185,19 @@
 			projectRoot = "";
 			targets = (
 				8FFF61561DBC074D0033E1FC /* FormattedTextField */,
+				8F93201C1DD775890097A8AF /* FormattedTextFieldTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8F93201B1DD775890097A8AF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8FFF61551DBC074D0033E1FC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -155,6 +208,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		8F9320191DD775890097A8AF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8FBA8C5E1DD77C2A00B12B0A /* MaskTextFormatterTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8FFF61521DBC074D0033E1FC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -162,12 +223,44 @@
 				8FFF61651DBC07C70033E1FC /* StringExtension.swift in Sources */,
 				8FD40B471DBEB3840015DB1D /* UITextFieldExtension.swift in Sources */,
 				8FFF61641DBC07C70033E1FC /* FormattedTextField.swift in Sources */,
+				8F93202B1DD776C30097A8AF /* MaskTextFormatter.swift in Sources */,
+				8F9320291DD7759D0097A8AF /* TextFormatter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		8F9320241DD775890097A8AF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8FFF61561DBC074D0033E1FC /* FormattedTextField */;
+			targetProxy = 8F9320231DD775890097A8AF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		8F9320251DD775890097A8AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = FormattedTextFieldTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ey.FormattedTextFieldTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		8F9320261DD775890097A8AF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = FormattedTextFieldTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ey.FormattedTextFieldTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
 		8FFF615D1DBC074E0033E1FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -311,6 +404,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8F9320271DD775890097A8AF /* Build configuration list for PBXNativeTarget "FormattedTextFieldTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F9320251DD775890097A8AF /* Debug */,
+				8F9320261DD775890097A8AF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		8FFF61511DBC074D0033E1FC /* Build configuration list for PBXProject "FormattedTextField" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
