@@ -7,13 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F9320221DD775890097A8AF /* FormattedTextField.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FFF61571DBC074D0033E1FC /* FormattedTextField.framework */; };
+		8F9320291DD7759D0097A8AF /* TextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9320281DD7759D0097A8AF /* TextFormatter.swift */; };
 		8FD40B471DBEB3840015DB1D /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD40B461DBEB3840015DB1D /* UITextFieldExtension.swift */; };
 		8FFF615C1DBC074E0033E1FC /* FormattedTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FFF615A1DBC074E0033E1FC /* FormattedTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8FFF61641DBC07C70033E1FC /* FormattedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFF61621DBC07C70033E1FC /* FormattedTextField.swift */; };
 		8FFF61651DBC07C70033E1FC /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFF61631DBC07C70033E1FC /* StringExtension.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		8F9320231DD775890097A8AF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8FFF614E1DBC074D0033E1FC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8FFF61561DBC074D0033E1FC;
+			remoteInfo = FormattedTextField;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		8F93201D1DD775890097A8AF /* FormattedTextFieldTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FormattedTextFieldTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F93201F1DD775890097A8AF /* MaskTextFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskTextFormatterTests.swift; sourceTree = "<group>"; };
+		8F9320211DD775890097A8AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8F9320281DD7759D0097A8AF /* TextFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFormatter.swift; sourceTree = "<group>"; };
+		8F93202A1DD776C30097A8AF /* MaskTextFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MaskTextFormatter.swift; sourceTree = "<group>"; };
 		8FD40B461DBEB3840015DB1D /* UITextFieldExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
 		8FFF61571DBC074D0033E1FC /* FormattedTextField.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FormattedTextField.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FFF615A1DBC074E0033E1FC /* FormattedTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FormattedTextField.h; sourceTree = "<group>"; };
@@ -57,6 +74,7 @@
 				8FD40B461DBEB3840015DB1D /* UITextFieldExtension.swift */,
 				8FFF615A1DBC074E0033E1FC /* FormattedTextField.h */,
 				8FFF615B1DBC074E0033E1FC /* Info.plist */,
+				8F9320281DD7759D0097A8AF /* TextFormatter.swift */,
 			);
 			path = FormattedTextField;
 			sourceTree = "<group>";
