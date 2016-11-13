@@ -13,7 +13,6 @@ import UIKit
 }
 
 open class FormattedTextField: UITextField {
-    open static let maskSymbol: Character = "×"
 
     public override init(frame: CGRect) {
         placeholderLabel = UILabel()
@@ -34,8 +33,11 @@ open class FormattedTextField: UITextField {
         super.delegate = delegateProxy
 
         if let unformattedText = unformattedText {
-            var cursorPosition = 0
-            text = formattedText(fromText: unformattedText, textMask: text, cursorPosition: &cursorPosition)
+            if let formatter = textFormatter {
+                text = formatter.formattedText(from: unformattedText)
+            } else {
+                text = unformattedText
+            }
         }
 
         placeholderLabel.font = font
@@ -48,22 +50,26 @@ open class FormattedTextField: UITextField {
         addSubview(placeholderLabel)
     }
 
-    @IBInspectable open var textMask: String? {
-        didSet(oldMask) {
-            var cursorPosition: Int = 0
-            if let selectedRange = selectedCharactersRange, let text = text {
-                cursorPosition = text.distance(from: text.startIndex, to: selectedRange.lowerBound)
-            } else {
-                cursorPosition = 0
+    @IBInspectable open var textFormatter: TextFromatter? {
+        didSet(oldFormatter) {
+            let text = (self.text ?? "")
+            let selectedRange = selectedCharactersRange ?? text.startIndex..<text.startIndex
+
+            var unformattedText = text
+            var unformattedRange = selectedRange
+            if let oldFormatter = oldFormatter {
+                (unformattedText, unformattedRange) = oldFormatter.unformattedText(from: text, range: selectedRange)
             }
 
-            let unformattedText = unformatterText(fromText: (text ?? ""), textMask: oldMask, cursorPosition: &cursorPosition)
-            let newFormattedText = formattedText(fromText: unformattedText, textMask: textMask, cursorPosition: &cursorPosition)
-            text = newFormattedText
+            var formattedText = unformattedText
+            var formattedRange = unformattedRange
+            if let formatter = textFormatter {
+                (formattedText, formattedRange) = formatter.formattedText(from: unformattedText, range: unformattedRange)
+            }
 
+            self.text = formattedText
             if selectedTextRange != nil {
-                let cursorIndex = newFormattedText.index(newFormattedText.startIndex, offsetBy: cursorPosition, limitedBy: newFormattedText.endIndex) ?? newFormattedText.endIndex
-                selectedCharactersRange = cursorIndex..<cursorIndex
+                selectedCharactersRange = formattedRange.upperBound..<formattedRange.upperBound
             }
         }
     }
@@ -73,21 +79,25 @@ open class FormattedTextField: UITextField {
             guard let text = text else {
                 return nil
             }
-            var cursorPosition = 0
-            let unformattedText = self.unformatterText(fromText: text, textMask: textMask, cursorPosition: &cursorPosition)
+            guard let formatter = textFormatter else {
+                return text
+            }
+            let unformattedText = formatter.unformattedText(from: text)
 
             return unformattedText
         }
         set(value) {
-            var cursorPosition = 0
-            let unformattedText = value ?? ""
-            let formattedText = self.formattedText(fromText: unformattedText, textMask: textMask, cursorPosition: &cursorPosition)
+            var formattedText = (value ?? "")
+            if let formatter = textFormatter {
+                formattedText = formatter.formattedText(from: formattedText)
+            }
+
             if formattedText.characters.count > 0 || value != nil {
                 text = formattedText
             } else {
                 text = nil
             }
-            placeholderLabel.isHidden = (unformattedText.characters.count > 0)
+            placeholderLabel.isHidden = (formattedText.characters.count > 0)
         }
     }
 
@@ -96,7 +106,7 @@ open class FormattedTextField: UITextField {
             return super.attributedText
         }
         set(value) {
-            assert(false, "masked text field unsupports attributed text")
+            assertionFailure("masked text field unsupports attributed text")
         }
     }
 
@@ -141,13 +151,12 @@ open class FormattedTextField: UITextField {
         super.layoutSubviews()
 
         var placeholderFrame = self.placeholderRect(forBounds:bounds)
-        if let mask = textMask, let firstMaskSymbolRange = mask.range(of: String(maskSymbol))  {
-            let prefix = mask[mask.startIndex..<firstMaskSymbolRange.lowerBound]
+        if let text = self.text {
             var attributes: [String: Any]? = nil
             if let placeholderFont = font {
                 attributes = [NSFontAttributeName: placeholderFont]
             }
-            let prefixWidth = (prefix as NSString).size(attributes: attributes).width
+            let prefixWidth = (text as NSString).size(attributes: attributes).width
             placeholderFrame.origin.x += prefixWidth
             placeholderFrame.size.width -= prefixWidth
         }
@@ -156,9 +165,6 @@ open class FormattedTextField: UITextField {
 
     // MARK: - Private
 
-    private var maskSymbol: Character {
-        return type(of: self).maskSymbol
-    }
     private let placeholderLabel: UILabel
 
     private lazy var delegateProxy: TextFieldDelegateProxy = {
@@ -174,136 +180,51 @@ open class FormattedTextField: UITextField {
                 return false
             }
         }
+        let text = self.text ?? ""
+        let charactersRange = text.range(fromUtf16NsRange: range)!
 
-        let formattedText = text ?? ""
-        var charachtersRange = formattedText.nsrange(fromRange: formattedText.range(fromUtf16NsRange: range)!)
-
-        var cursorPosition: Int
-        if string.characters.count > 0 {
-            cursorPosition = NSMaxRange(charachtersRange)
+        let unformattedText: String
+        var unformattedRange: Range<String.Index>
+        if let formatter = textFormatter {
+            (unformattedText, unformattedRange) = formatter.unformattedText(from: text, range: charactersRange)
         } else {
-            charachtersRange = deleteBackwardRange(fromRange: charachtersRange)
-            cursorPosition = charachtersRange.location
+            unformattedText = text
+            unformattedRange = charactersRange
         }
 
-        var unformattedText = unformatterText(fromText: formattedText, textMask: textMask, cursorPosition: &cursorPosition)
-        let unformattedRange = self.range(fromFormattedRange: charachtersRange)
+        let isBackspace = (string.characters.count == 0 && unformattedRange.isEmpty)
+        if isBackspace && unformattedRange.lowerBound != unformattedText.startIndex {
+            unformattedRange = unformattedText.index(before: unformattedRange.lowerBound)..<unformattedRange.upperBound
+        }
 
         if let originDelegate = (delegateProxy.delegate as? FormattedTextFieldDelegate),
             originDelegate.responds(to: #selector(FormattedTextFieldDelegate.textField(_:shouldChangeUnformattedText:in:replacementString:))) {
-
-            let utf16UnformattedRange = unformattedText.utf16Nsrange(fromRange: unformattedText.range(fromNsRange: unformattedRange)!)
+            let utf16UnformattedRange = unformattedText.utf16Nsrange(fromRange: unformattedRange)
             if !originDelegate.textField!(self, shouldChangeUnformattedText:unformattedText, in:utf16UnformattedRange, replacementString: string) {
                 return false
             }
         }
 
-        unformattedText.replaceSubrange(unformattedText.range(fromNsRange: unformattedRange)!, with: string)
-        cursorPosition += string.characters.count
-        if string.characters.count > 0 {
-            cursorPosition -= unformattedRange.length
+        let newUnformattedText = unformattedText.replacingCharacters(in: unformattedRange, with: string)
+        let selectionOffset = unformattedText.distance(from: unformattedText.startIndex, to: unformattedRange.lowerBound)
+        let cursorPosition = newUnformattedText.index(newUnformattedText.startIndex, offsetBy: selectionOffset + string.characters.count)
+
+        let formattedText: String
+        let formattedRange: Range<String.Index>
+        if let formatter = textFormatter {
+            (formattedText, formattedRange) = formatter.formattedText(from: newUnformattedText, range: cursorPosition..<cursorPosition)
+        } else {
+            formattedText = newUnformattedText
+            formattedRange = cursorPosition..<cursorPosition
         }
+        self.text = formattedText
+        selectedCharactersRange = formattedRange.upperBound..<formattedRange.upperBound
 
-        let newFormattedText = self.formattedText(fromText: unformattedText, textMask: textMask, cursorPosition: &cursorPosition)
-        text = newFormattedText
-        placeholderLabel.isHidden = (unformattedText.characters.count > 0)
-
-        cursorPosition = min(cursorPosition, newFormattedText.characters.count)
-        let cursorIndex = newFormattedText.index(newFormattedText.startIndex, offsetBy: cursorPosition)
-        selectedCharactersRange = cursorIndex..<cursorIndex
+        placeholderLabel.isHidden = (newUnformattedText.characters.count > 0)
 
         sendActions(for: .editingChanged)
 
         return false
-    }
-
-    private func unformatterText(fromText text: String, textMask: String?, cursorPosition: inout Int) -> String {
-        guard let mask = textMask else {
-            return text
-        }
-        let originCursorPosition = cursorPosition
-
-        var unformattedText = String()
-        for i in 0..<(min(mask.characters.count, text.characters.count)) {
-            let maskCharacter = mask.characters[mask.index(mask.startIndex, offsetBy: i)]
-            if maskCharacter == maskSymbol {
-                let textCharacter = text.characters[text.index(text.startIndex, offsetBy: i)]
-                unformattedText.append(textCharacter)
-            } else if i < originCursorPosition {
-                cursorPosition -= 1
-            }
-        }
-
-        return unformattedText
-    }
-
-    private func formattedText(fromText text: String, textMask: String?, cursorPosition: inout Int) -> String {
-        guard let mask = textMask else {
-            return text
-        }
-        let originCursorPosition = cursorPosition
-
-        var formattedText = String()
-        var textIndex = 0
-        for maskCharacter in mask.characters {
-            if maskCharacter == maskSymbol {
-                if textIndex >= text.characters.count {
-                    break
-                }
-                let textCharacter = text.characters[text.index(text.startIndex, offsetBy: textIndex)]
-                formattedText.append(textCharacter)
-                textIndex += 1
-            } else {
-                formattedText.append(maskCharacter)
-                if textIndex <= originCursorPosition {
-                    cursorPosition += 1
-                }
-            }
-        }
-
-        return formattedText
-    }
-
-    private func range(fromFormattedRange range: NSRange) -> NSRange {
-        guard let mask = textMask else {
-            return range
-        }
-
-        let maskCharactersRange = mask.range(fromNsRange: range)!
-        var location = 0
-        for character in mask[mask.startIndex..<maskCharactersRange.lowerBound].characters {
-            if character == maskSymbol {
-                location += 1
-            }
-        }
-        var length = 0
-        for character in mask[maskCharactersRange].characters {
-            if character == maskSymbol {
-                length += 1
-            }
-        }
-        return NSMakeRange(location, length)
-    }
-
-    private func deleteBackwardRange(fromRange range: NSRange) -> NSRange {
-        guard let mask = self.textMask else {
-            return range
-        }
-        let charactersRange = mask.range(fromNsRange: range)!
-        if mask[charactersRange].contains(String(maskSymbol)) {
-            return range
-        }
-
-        let searchRange = mask.startIndex..<charactersRange.lowerBound
-
-        let deleteRange: Range<String.Index>
-        if let removedSymbolRange = mask.range(of: String(maskSymbol), options: .backwards, range: searchRange, locale: nil) {
-            deleteRange = removedSymbolRange.lowerBound..<charactersRange.upperBound
-        } else {
-            deleteRange = charactersRange.upperBound..<charactersRange.upperBound
-        }
-
-        return mask.nsrange(fromRange: deleteRange)
     }
 }
 
