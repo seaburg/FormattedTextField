@@ -14,6 +14,7 @@ class ViewController: UIViewController, FormattedTextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        textField.textFormatter = MaskTextFormatter(mask: "+× ××× ××× ××××××××")
         // Do any additional setup after loading the view, typically from a nib.
     }
 
@@ -25,8 +26,11 @@ class ViewController: UIViewController, FormattedTextFieldDelegate {
 // MARK: - Actions
 
     @IBAction private func textFieldTextChanged(_ textField: FormattedTextField) {
-        let textMask = mask(forPhoneNumber: textField.unformattedText ?? "")
-        textField.textMask = textMask ?? "+× ××× ××× ××××××××"
+        let textMask = mask(forPhoneNumber: textField.unformattedText ?? "") ?? "+× ××× ××× ××××××××"
+        let formatter = textField.textFormatter! as! MaskTextFormatter
+        if formatter.mask != textMask {
+            textField.textFormatter = MaskTextFormatter(mask: textMask)
+        }
     }
 
 // MARK: - FormattedTextFieldDelegate
