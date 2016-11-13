@@ -50,7 +50,7 @@ open class FormattedTextField: UITextField {
         addSubview(placeholderLabel)
     }
 
-    @IBInspectable open var textFormatter: TextFromatter? {
+    open var textFormatter: TextFromatter? {
         didSet(oldFormatter) {
             let text = (self.text ?? "")
             let selectedRange = selectedCharactersRange ?? text.startIndex..<text.startIndex
