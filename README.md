@@ -19,7 +19,7 @@ Usage
     import FormattedTextField
     ...
         let textField = FormattedTextField()
-        textField.textMask = "8 (×××) ××× ××××"
+        textField.textFormatter = MaskTextFormatter(mask: "8 (×××) ××× ××××")
         textField.placeholder = "___) ___ ____"
         textField.unformattedText = "1111111111"
     ...
