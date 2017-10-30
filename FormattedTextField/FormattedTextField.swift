@@ -47,6 +47,9 @@ open class FormattedTextField: UITextField {
         } else if let placeholder = super.placeholder {
             placeholderLabel.text = placeholder
         }
+        // iOS 11: placeholderRect(forBounds:) returns empty rect when placeholder is empty
+        super.placeholder = " "
+
         addSubview(placeholderLabel)
     }
 
