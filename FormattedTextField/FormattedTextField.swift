@@ -18,17 +18,17 @@ open class FormattedTextField: UITextField {
         placeholderLabel = UILabel()
 
         super.init(frame: frame)
-        commonInit()
+        commonInitFormattedTextField()
     }
 
     public required init?(coder aDecoder: NSCoder) {
         placeholderLabel = UILabel()
 
         super.init(coder: aDecoder)
-        commonInit()
+        commonInitFormattedTextField()
     }
 
-    private func commonInit() {
+    private func commonInitFormattedTextField() {
         delegateProxy.delegate = super.delegate
         super.delegate = delegateProxy
 
@@ -47,11 +47,12 @@ open class FormattedTextField: UITextField {
         } else if let placeholder = super.placeholder {
             placeholderLabel.text = placeholder
         }
+        // iOS 11: placeholderRect(forBounds:) returns the empty rect when the placeholder is empty
+        super.placeholder = " "
         if #available(iOS 11, *) {
-            // iOS 11: placeholderRect(forBounds:) returns empty rect when placeholder is empty
-            super.placeholder = " "
+
             if smartInsertDeleteType != .no {
-                print("[FormattedTextField] warning: smartInsertDeleteType unsupports");
+                print("[FormattedTextField] warning: smartInsertDeleteType is unsupported");
             }
         }
 
