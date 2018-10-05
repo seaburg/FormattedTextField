@@ -36,7 +36,7 @@ class ViewController: UIViewController, FormattedTextFieldDelegate {
 // MARK: - FormattedTextFieldDelegate
 
     func textField(_ textField: UITextField, shouldChangeUnformattedText text: String, in range: NSRange, replacementString: String) -> Bool {
-        return (replacementString.characters.count == 0 || Int(replacementString) != nil)
+        return (replacementString.isEmpty || Int(replacementString) != nil)
     }
 
 // MARK: - Actions

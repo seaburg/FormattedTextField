@@ -45,10 +45,13 @@ extension String {
         return lowerBound..<upperBound
     }
 
-    func utf16Nsrange(fromRange range: Range<String.Index>) -> NSRange {
-        let utf16LowerBound = range.lowerBound.samePosition(in: utf16)
-        let utf16UpperBound = range.upperBound.samePosition(in: utf16)
-
+    func utf16Nsrange(fromRange range: Range<String.Index>) -> NSRange? {
+        guard let utf16LowerBound = range.lowerBound.samePosition(in: utf16) else {
+            return nil;
+        }
+        guard let utf16UpperBound = range.upperBound.samePosition(in: utf16) else {
+            return nil;
+        }
         let location = utf16.distance(from: utf16.startIndex, to: utf16LowerBound)
         let length = utf16.distance(from: utf16LowerBound, to: utf16UpperBound)
 

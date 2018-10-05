@@ -100,12 +100,12 @@ open class FormattedTextField: UITextField {
                 formattedText = formatter.formattedText(from: formattedText)
             }
 
-            if formattedText.characters.count > 0 || value != nil {
+            if !formattedText.isEmpty || value != nil {
                 text = formattedText
             } else {
                 text = nil
             }
-            placeholderLabel.isHidden = (formattedText.characters.count > 0)
+            placeholderLabel.isHidden = !formattedText.isEmpty
         }
     }
 
@@ -160,11 +160,11 @@ open class FormattedTextField: UITextField {
 
         var placeholderFrame = self.placeholderRect(forBounds:bounds)
         if let text = self.text {
-            var attributes: [String: Any]? = nil
+            var attributes: [NSAttributedString.Key: Any]? = nil
             if let placeholderFont = font {
-                attributes = [NSFontAttributeName: placeholderFont]
+                attributes = [ .font: placeholderFont]
             }
-            let prefixWidth = (text as NSString).size(attributes: attributes).width
+            let prefixWidth = (text as NSString).size(withAttributes: attributes).width
             placeholderFrame.origin.x += prefixWidth
             placeholderFrame.size.width -= prefixWidth
         }
@@ -189,7 +189,9 @@ open class FormattedTextField: UITextField {
             }
         }
         let text = self.text ?? ""
-        let charactersRange = text.range(fromUtf16NsRange: range)!
+        guard let charactersRange = text.range(fromUtf16NsRange: range) else {
+            return false
+        }
 
         let unformattedText: String
         var unformattedRange: Range<String.Index>
@@ -200,14 +202,16 @@ open class FormattedTextField: UITextField {
             unformattedRange = charactersRange
         }
 
-        let isBackspace = (string.characters.count == 0 && unformattedRange.isEmpty)
+        let isBackspace = (string.isEmpty && unformattedRange.isEmpty)
         if isBackspace && unformattedRange.lowerBound != unformattedText.startIndex {
             unformattedRange = unformattedText.index(before: unformattedRange.lowerBound)..<unformattedRange.upperBound
         }
 
         if let originDelegate = (delegateProxy.delegate as? FormattedTextFieldDelegate),
             originDelegate.responds(to: #selector(FormattedTextFieldDelegate.textField(_:shouldChangeUnformattedText:in:replacementString:))) {
-            let utf16UnformattedRange = unformattedText.utf16Nsrange(fromRange: unformattedRange)
+            guard let utf16UnformattedRange = unformattedText.utf16Nsrange(fromRange: unformattedRange) else {
+                return false
+            }
             if !originDelegate.textField!(self, shouldChangeUnformattedText:unformattedText, in:utf16UnformattedRange, replacementString: string) {
                 return false
             }
@@ -215,7 +219,7 @@ open class FormattedTextField: UITextField {
 
         let newUnformattedText = unformattedText.replacingCharacters(in: unformattedRange, with: string)
         let selectionOffset = unformattedText.distance(from: unformattedText.startIndex, to: unformattedRange.lowerBound)
-        let cursorPosition = newUnformattedText.index(newUnformattedText.startIndex, offsetBy: selectionOffset + string.characters.count)
+        let cursorPosition = newUnformattedText.index(newUnformattedText.startIndex, offsetBy: selectionOffset + string.count)
 
         let formattedText: String
         let formattedRange: Range<String.Index>
@@ -228,7 +232,7 @@ open class FormattedTextField: UITextField {
         self.text = formattedText
         selectedCharactersRange = formattedRange.upperBound..<formattedRange.upperBound
 
-        placeholderLabel.isHidden = (newUnformattedText.characters.count > 0)
+        placeholderLabel.isHidden = !newUnformattedText.isEmpty
 
         sendActions(for: .editingChanged)
 
@@ -264,7 +268,7 @@ private class TextFieldDelegateProxy: NSObject, UITextFieldDelegate {
     }
 
     @available(iOS 10.0, *)
-    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
+    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
         delegate?.textFieldDidEndEditing?(textField, reason: reason)
     }
 

@@ -31,7 +31,10 @@ extension UITextField {
             guard let text = text else {
                 return
             }
-            let utf16Range = text.utf16Nsrange(fromRange: value)
+            guard let utf16Range = text.utf16Nsrange(fromRange: value) else {
+                selectedTextRange = nil
+                return
+            }
 
             let from = position(from: beginningOfDocument, offset: utf16Range.location)!
             let to = position(from: from, offset: utf16Range.length)!

@@ -23,14 +23,14 @@ public class MaskTextFormatter: TextFromatter {
             text.distance(from: range.lowerBound, to: range.upperBound)
         )
 
-        guard let prefixRange = mask.range(of: String(maskSymbol)) else {
+        guard let prefixEndIndex = mask.range(of: String(maskSymbol))?.lowerBound else {
             return (mask, mask.startIndex..<mask.startIndex)
         }
-        var formattedText = mask.substring(to: prefixRange.lowerBound)
-        var formattedRange = NSMakeRange(formattedText.characters.count, 0)
+        var formattedText = mask[mask.startIndex..<prefixEndIndex]
+        var formattedRange = NSMakeRange(formattedText.count, 0)
 
         var index = 0
-        for maskCharacter in mask.substring(from: prefixRange.lowerBound).characters {
+        for maskCharacter in mask[prefixEndIndex..<mask.endIndex] {
             if index < unformattedRange.location {
                 formattedRange.location += 1
             } else if index < NSMaxRange(unformattedRange) {
@@ -38,10 +38,10 @@ public class MaskTextFormatter: TextFromatter {
             }
 
             if maskCharacter == maskSymbol {
-                if index >= text.characters.count {
+                if index >= text.count {
                     break
                 }
-                let textCharacter = text.characters[text.index(text.startIndex, offsetBy: index)]
+                let textCharacter = text[text.index(text.startIndex, offsetBy: index)]
                 formattedText.append(textCharacter)
                 index += 1
             } else {
@@ -55,7 +55,7 @@ public class MaskTextFormatter: TextFromatter {
         let lowerBound = formattedText.index(formattedText.startIndex, offsetBy: formattedRange.location)
         let upperBound = formattedText.index(lowerBound, offsetBy: formattedRange.length)
 
-        return (formattedText, lowerBound..<upperBound)
+        return (String(formattedText), lowerBound..<upperBound)
     }
 
     public func unformattedText(from text: String, range: Range<String.Index>) -> (text: String, range: Range<String.Index>) {
@@ -66,14 +66,14 @@ public class MaskTextFormatter: TextFromatter {
 
         var unformattedText = String()
         var unformattedRange = NSMakeRange(0, 0)
-        for i in 0..<(min(mask.characters.count, text.characters.count)) {
+        for i in 0..<(min(mask.count, text.count)) {
             let index = mask.index(mask.startIndex, offsetBy: i)
-            let maskCharacter = mask.characters[index]
+            let maskCharacter = mask[index]
             if maskCharacter != maskSymbol {
                 continue;
             }
 
-            let textCharacter = text.characters[text.index(text.startIndex, offsetBy: i)]
+            let textCharacter = text[text.index(text.startIndex, offsetBy: i)]
             unformattedText.append(textCharacter)
 
             if i < formattedRange.location {
