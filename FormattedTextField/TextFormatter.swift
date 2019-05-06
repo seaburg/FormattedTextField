@@ -14,11 +14,11 @@ public protocol TextFromatter {
 }
 
 public extension TextFromatter {
-    public func formattedText(from text: String) -> String {
+    func formattedText(from text: String) -> String {
         return formattedText(from: text, range: text.startIndex..<text.startIndex).text
     }
 
-    public func unformattedText(from text: String) -> String {
+    func unformattedText(from text: String) -> String {
         return unformattedText(from: text, range: text.startIndex..<text.startIndex).text
     }
 }
