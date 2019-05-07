@@ -25,20 +25,22 @@ open class FormattedTextField: UITextField {
     }
 
     public override init(frame: CGRect) {
-        placeholderLabel = UILabel()
-
         super.init(frame: frame)
         commonInitFormattedTextField()
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        placeholderLabel = UILabel()
-
         super.init(coder: aDecoder)
         commonInitFormattedTextField()
     }
 
     private func commonInitFormattedTextField() {
+        delegateProxy.shouldChangeHandler = { [unowned self] (range, string) in
+            return self.shouldChangeCharacters(in: range, replacementString: string)
+        }
+        delegateProxy.shouldClearHandler = { [unowned self] in
+            return self.shouldClear()
+        }
         delegateProxy.delegate = super.delegate
         super.delegate = delegateProxy
 
@@ -275,14 +277,8 @@ open class FormattedTextField: UITextField {
         return placeholderLabel.sizeThatFits(CGSize(width: CGFloat.infinity, height: CGFloat.infinity)).width
     }
 
-    private let placeholderLabel: UILabel
-
-    private lazy var delegateProxy: TextFieldDelegateProxy = {
-        let shouldChangeFunc: (NSRange, String) -> Bool = { [unowned self] (range, string) in
-            return self.shouldChangeCharacters(in: range, replacementString: string)
-        }
-        return TextFieldDelegateProxy(shouldChangeFunc: shouldChangeFunc)
-    }()
+    private let placeholderLabel: UILabel = UILabel()
+    private let delegateProxy: TextFieldDelegateProxy = TextFieldDelegateProxy()
 
     private func shouldChangeCharacters(in range: NSRange, replacementString string: String) -> Bool {
         if let shouldChange = delegateProxy.delegate?.textField?(self, shouldChangeCharactersIn: range, replacementString: string) {
@@ -310,7 +306,7 @@ open class FormattedTextField: UITextField {
         }
 
         if let originDelegate = (delegateProxy.delegate as? Delegate),
-            originDelegate.responds(to: #selector(FormattedTextFieldDelegate.textField(_:shouldChangeUnformattedText:in:replacementString:))) {
+           originDelegate.responds(to: #selector(FormattedTextFieldDelegate.textField(_:shouldChangeUnformattedText:in:replacementString:))) {
             guard let utf16UnformattedRange = unformattedText.utf16Nsrange(fromRange: unformattedRange) else {
                 return false
             }
@@ -338,18 +334,25 @@ open class FormattedTextField: UITextField {
 
         return false
     }
+
+    private func shouldClear() -> Bool {
+        if let shouldClear = delegateProxy.delegate?.textFieldShouldClear?(self), !shouldClear {
+            return false
+        }
+        unformattedText = nil
+        sendActions(for: .editingChanged)
+
+        return false
+    }
 }
 
 // MARK: - TextFieldDelegateProxy
 
 private class TextFieldDelegateProxy: NSObject, UITextFieldDelegate {
     weak var delegate: UITextFieldDelegate?
-    private var shouldChangeFunc: (NSRange, String) -> Bool
 
-    init(shouldChangeFunc: @escaping (NSRange, String) -> Bool) {
-        self.shouldChangeFunc = shouldChangeFunc
-        super.init()
-    }
+    var shouldChangeHandler: ((NSRange, String) -> Bool)?
+    var shouldClearHandler: (() -> Bool)?
 
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         return delegate?.textFieldShouldBeginEditing?(textField) ?? true
@@ -373,11 +376,11 @@ private class TextFieldDelegateProxy: NSObject, UITextFieldDelegate {
     }
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return shouldChangeFunc(range, string)
+        return shouldChangeHandler?(range, string) ?? true
     }
 
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        return delegate?.textFieldShouldClear?(textField) ?? true
+        return shouldClearHandler?() ?? true
     }
 
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
