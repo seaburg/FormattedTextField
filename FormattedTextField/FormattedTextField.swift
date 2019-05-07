@@ -13,6 +13,16 @@ import UIKit
 }
 
 open class FormattedTextField: UITextField {
+    public typealias Delegate = FormattedTextFieldDelegate
+
+    public enum PlaceholderMode {
+        case whileEmpty
+        case always
+    }
+
+    deinit {
+        removeTarget(self, action: #selector(self.textViewEditingChanged(_:)), for: .editingChanged)
+    }
 
     public override init(frame: CGRect) {
         placeholderLabel = UILabel()
@@ -47,16 +57,15 @@ open class FormattedTextField: UITextField {
         } else if let placeholder = super.placeholder {
             placeholderLabel.text = placeholder
         }
-        // iOS 11: placeholderRect(forBounds:) returns the empty rect when the placeholder is empty
-        super.placeholder = " "
-        if #available(iOS 11, *) {
+        addSubview(placeholderLabel)
 
+        addTarget(self, action: #selector(self.textViewEditingChanged(_:)), for: .editingChanged)
+
+        if #available(iOS 11, *) {
             if smartInsertDeleteType != .no {
                 print("[FormattedTextField] warning: smartInsertDeleteType is unsupported");
             }
         }
-
-        addSubview(placeholderLabel)
     }
 
     open var textFormatter: TextFromatter? {
@@ -106,7 +115,6 @@ open class FormattedTextField: UITextField {
             } else {
                 text = nil
             }
-            placeholderLabel.isHidden = !formattedText.isEmpty
         }
     }
 
@@ -119,12 +127,19 @@ open class FormattedTextField: UITextField {
         }
     }
 
+    open var placeholderMode: PlaceholderMode = .whileEmpty {
+        didSet {
+            setNeedsLayout()
+        }
+    }
+
     open override var placeholder: String? {
         get {
             return placeholderLabel.text
         }
         set(value) {
             placeholderLabel.text = value
+            setNeedsLayout()
         }
     }
 
@@ -147,6 +162,16 @@ open class FormattedTextField: UITextField {
         }
     }
 
+    open override var textAlignment: NSTextAlignment {
+        get {
+            return super.textAlignment
+        }
+        set {
+            super.textAlignment = newValue
+            setNeedsLayout()
+        }
+    }
+
     open override var delegate: UITextFieldDelegate? {
         get {
             return delegateProxy
@@ -159,20 +184,96 @@ open class FormattedTextField: UITextField {
     open override func layoutSubviews() {
         super.layoutSubviews()
 
-        var placeholderFrame = self.placeholderRect(forBounds:bounds)
-        if let text = self.text {
-            var attributes: [NSAttributedString.Key: Any]? = nil
-            if let placeholderFont = font {
-                attributes = [ .font: placeholderFont]
-            }
-            let prefixWidth = (text as NSString).size(withAttributes: attributes).width
-            placeholderFrame.origin.x += prefixWidth
-            placeholderFrame.size.width -= prefixWidth
-        }
-        self.placeholderLabel.frame = placeholderFrame;
+        layoutPlaceholder()
+    }
+
+    open override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return super.editingRect(forBounds: bounds).inset(by: textRectInset)
+    }
+
+    open override func textRect(forBounds bounds: CGRect) -> CGRect {
+        return super.textRect(forBounds: bounds).inset(by: textRectInset)
     }
 
     // MARK: - Private
+
+    private var textRectInset: UIEdgeInsets {
+        return isPlaceholderVisible ? UIEdgeInsets(top: 0, left: 0, bottom: 0, right: placeholderLabelWidth) : .zero
+    }
+
+    @objc private func textViewEditingChanged(_ sender: AnyObject?) {
+        layoutPlaceholder()
+    }
+
+    private func layoutPlaceholder() {
+        placeholderLabel.frame = placeholderFrame
+    }
+
+    private var placeholderFrame: CGRect {
+        if !isPlaceholderVisible {
+            return .zero
+        }
+
+        let textRect = isEditing ? editingRect(forBounds: bounds) : self.textRect(forBounds: bounds)
+
+        var placeholderLabelFrame = textRect
+        placeholderLabelFrame.size.width = placeholderLabelWidth
+
+        switch textAlignment {
+        case .center:
+            placeholderLabelFrame.origin.x = textRect.midX + enteredTextWidth * 0.5
+        case .left, .justified:
+            fallthrough
+        case .natural where UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .leftToRight:
+            placeholderLabelFrame.origin.x += enteredTextWidth
+        case .right:
+            placeholderLabelFrame.origin.x = textRect.maxX
+        default:
+            // TODO: Add support for right-to-left direction
+            placeholderLabelFrame = .zero
+        }
+        return placeholderLabelFrame
+    }
+
+    private var isPlaceholderVisible: Bool {
+        if placeholder?.isEmpty ?? true {
+            return false
+        }
+
+        // Hides placeholder before text field adds scrolling text
+        var isVisible = (placeholderAndTextRect.width - enteredTextWidth - placeholderHiddingGap >= placeholderLabelWidth)
+        if isVisible {
+            switch placeholderMode {
+            case .always:
+                isVisible = true
+            case .whileEmpty:
+                isVisible = unformattedText?.isEmpty ?? true
+            }
+        }
+        return isVisible
+    }
+
+    private var placeholderAndTextRect: CGRect {
+        return isEditing ? super.editingRect(forBounds: bounds) : super.textRect(forBounds: bounds)
+    }
+
+    // UITextFields adds scrolling before entered text fills all available width
+    private var placeholderHiddingGap: CGFloat = 10
+
+    private var enteredTextWidth: CGFloat {
+        guard let text = self.text else {
+            return 0
+        }
+        var attributes: [NSAttributedString.Key: Any]? = nil
+        if let placeholderFont = font {
+            attributes = [ .font: placeholderFont]
+        }
+        return (text as NSString).size(withAttributes: attributes).width
+    }
+
+    private var placeholderLabelWidth: CGFloat {
+        return placeholderLabel.sizeThatFits(CGSize(width: CGFloat.infinity, height: CGFloat.infinity)).width
+    }
 
     private let placeholderLabel: UILabel
 
@@ -208,7 +309,7 @@ open class FormattedTextField: UITextField {
             unformattedRange = unformattedText.index(before: unformattedRange.lowerBound)..<unformattedRange.upperBound
         }
 
-        if let originDelegate = (delegateProxy.delegate as? FormattedTextFieldDelegate),
+        if let originDelegate = (delegateProxy.delegate as? Delegate),
             originDelegate.responds(to: #selector(FormattedTextFieldDelegate.textField(_:shouldChangeUnformattedText:in:replacementString:))) {
             guard let utf16UnformattedRange = unformattedText.utf16Nsrange(fromRange: unformattedRange) else {
                 return false
@@ -232,8 +333,6 @@ open class FormattedTextField: UITextField {
         }
         self.text = formattedText
         selectedCharactersRange = formattedRange.upperBound..<formattedRange.upperBound
-
-        placeholderLabel.isHidden = !newUnformattedText.isEmpty
 
         sendActions(for: .editingChanged)
 
