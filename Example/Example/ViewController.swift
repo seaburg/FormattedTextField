@@ -14,23 +14,15 @@ class ViewController: UIViewController, FormattedTextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        textField.textFormatter = MaskTextFormatter(mask: "+× ××× ××× ××××××××")
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        textField.textAlignment = .center
+        textField.placeholderMode = .always
+        updateTextFieldMask()
     }
 
 // MARK: - Actions
 
     @IBAction private func textFieldTextChanged(_ textField: FormattedTextField) {
-        let textMask = mask(forPhoneNumber: textField.unformattedText ?? "") ?? "+× ××× ××× ××××××××"
-        let formatter = textField.textFormatter! as! MaskTextFormatter
-        if formatter.mask != textMask {
-            textField.textFormatter = MaskTextFormatter(mask: textMask)
-        }
+        updateTextFieldMask()
     }
 
 // MARK: - FormattedTextFieldDelegate
@@ -39,16 +31,28 @@ class ViewController: UIViewController, FormattedTextFieldDelegate {
         return (replacementString.isEmpty || Int(replacementString) != nil)
     }
 
-// MARK: - Actions
+// MARK: - Private
+
+    private func updateTextFieldMask() {
+        let textMask = mask(forPhoneNumber: textField.unformattedText ?? "") ?? "+_ ___ ___ ________"
+        let formatter = textField.textFormatter as? MaskTextFormatter
+        if formatter?.mask != textMask {
+            textField.textFormatter = MaskTextFormatter(mask: textMask, maskSymbol: "_")
+        }
+
+        let placeholderStartIndex = textMask.index(textMask.startIndex, offsetBy: (textField.text?.count ?? 0))
+        textField.placeholder = String(textMask[placeholderStartIndex...])
+    }
+
     private func mask(forPhoneNumber phoneNumber: String) -> String? {
         let masks: [(format: String, mask: String)] = [
-            ("1", "+× (×××) ××× ××××"),
-            ("7", "+× (×××) ××× ××××"),
-            ("44", "+×× (×××) ×××× ××××"),
-            ("49", "+×× (×××××) ×××-××××"),
-            ("54", "+×× (×××) ××× ××××"),
-            ("86", "+×× (×××) ××× ××××"),
-            ("358", "+××× × ××× ×××"),
+            ("1", "+_ (___) ___ ____"),
+            ("7", "+_ (___) ___ ____"),
+            ("44", "+__ (___) ____ ____"),
+            ("49", "+__ (_____) ___-____"),
+            ("54", "+__ (___) ___ ____"),
+            ("86", "+__ (___) ___ ____"),
+            ("358", "+___ _ ___ ___"),
         ]
         return masks.first { (mask, _) -> Bool in
             phoneNumber.hasPrefix(mask)
